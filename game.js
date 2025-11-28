@@ -43,18 +43,27 @@ async function loadChart() {
     line.notes = []; // merge notesAbove and notesBelow using time
     let i = 0;
     let j = 0;
+    let note;
     while (i < line.notesAbove.length || j < line.notesBelow.length) {
       if (
         !(j < line.notesBelow.length) ||
         (i < line.notesAbove.length &&
           line.notesAbove[i].time <= line.notesBelow[j].time)
       ) {
-        line.notes.push({ ...line.notesAbove[i], direction: 1 });
+        note = { ...line.notesAbove[i], direction: 1 };
         i += 1;
       } else {
-        line.notes.push({ ...line.notesBelow[j], direction: -1 });
+        note = { ...line.notesBelow[j], direction: -1 };
         j += 1;
       }
+      note.hl = false;
+      if (line.notes.length != 0) {
+        if (note.time == line.notes[line.notes.length - 1].time) {
+          note.hl = true;
+          line.notes[line.notes.length - 1].hl = true;
+        }
+      }
+      line.notes.push(note);
     }
     delete line.notesAbove;
     delete line.notesBelow;
@@ -132,7 +141,12 @@ function drawLines(realTime) {
       for (let i = 0; i < notes.length; i++) {
         let note = notes[i];
         let colors = ["#0AC3FF", "#F0ED69", "#0AC3FF", "#FE4365"];
-        ctx.strokeStyle = colors[note.type - 1];
+        let hlColors = ["#7cffcb", "#fffeba", "#7cffcb", "#ffb469"]
+        if (note.hl) {
+          ctx.strokeStyle = hlColors[note.type - 1];
+        } else {
+          ctx.strokeStyle = colors[note.type - 1];
+        }
         ctx.fillStyle = colors[note.type - 1];
         let xPosition = note.positionX;
         let yPosition = note.floorPosition - floorPosition;
