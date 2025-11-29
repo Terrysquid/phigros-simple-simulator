@@ -144,6 +144,7 @@ function drawLines(realTime) {
         for (let i = 0; i < notes.length; i++) {
           let note = notes[i];
           if (note.type != noteType) continue;
+          // if (time < note.time - 3 * tps) continue; // hide distant notes
           let colors = ["#0AC3FF", "#F0ED69", "#0AC3FF", "#FE4365"];
           let hlColors = ["#7ce5ff", "#fffeba", "#7ce5ff", "#ff7369"];
           if (note.hl) {
@@ -172,12 +173,12 @@ function drawLines(realTime) {
             ctx.stroke();
           } else if (note.type == 3) {
             // hold
-            if (time > note.time + note.holdTime) continue;
             let dTime = Math.min(
               note.time + note.holdTime - time,
               note.holdTime
             );
             let dyPosition = (note.speed / tps) * dTime;
+            if (dyPosition <= 0) continue;
             if (time < note.time) {
               ctx.globalAlpha = 1;
               ctx.beginPath();
