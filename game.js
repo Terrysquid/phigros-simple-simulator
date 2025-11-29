@@ -134,59 +134,67 @@ function drawLines(realTime) {
     ctx.stroke();
 
     ctx.lineWidth = (1 / 80) * canvas.height; // thick notes
+
     drawNotes(line.notes);
     ctx.restore();
 
     function drawNotes(notes) {
-      for (let i = 0; i < notes.length; i++) {
-        let note = notes[i];
-        let colors = ["#0AC3FF", "#F0ED69", "#0AC3FF", "#FE4365"];
-        let hlColors = ["#7cffcb", "#fffeba", "#7cffcb", "#ffb469"]
-        if (note.hl) {
-          ctx.strokeStyle = hlColors[note.type - 1];
-        } else {
-          ctx.strokeStyle = colors[note.type - 1];
-        }
-        ctx.fillStyle = colors[note.type - 1];
-        let xPosition = note.positionX;
-        let yPosition = note.floorPosition - floorPosition;
-        let noteSize = 1.0;
-        let fadeTime = 0.16;
-        let xScale = (0.9 / 16) * canvas.width;
-        let yScale = 0.6 * canvas.height * note.direction;
-        if (note.type != 3) {
-          // non-hold
-          if (time > note.time + fadeTime * tps) continue;
-          yPosition *= note.speed;
-          ctx.globalAlpha = Math.min(
-            1 - (time - note.time) / (fadeTime * tps),
-            1
-          );
-          ctx.beginPath();
-          ctx.moveTo((-noteSize + xPosition) * xScale, -yPosition * yScale);
-          ctx.lineTo((noteSize + xPosition) * xScale, -yPosition * yScale);
-          ctx.stroke();
-        } else if (note.type == 3) {
-          // hold
-          if (time > note.time + note.holdTime) continue;
-          let dTime = Math.min(note.time + note.holdTime - time, note.holdTime);
-          let dyPosition = (note.speed / tps) * dTime;
-          if (time < note.time) {
-            ctx.globalAlpha = 1;
+      for (let k = 0; k < 4; k++) { // O(4n)
+        let noteType = [3, 2, 1, 4][k];
+        for (let i = 0; i < notes.length; i++) {
+          let note = notes[i];
+          if (note.type != noteType) continue;
+          let colors = ["#0AC3FF", "#F0ED69", "#0AC3FF", "#FE4365"];
+          let hlColors = ["#7ce5ff", "#fffeba", "#7ce5ff", "#ff7369"];
+          if (note.hl) {
+            ctx.strokeStyle = hlColors[note.type - 1];
+          } else {
+            ctx.strokeStyle = colors[note.type - 1];
+          }
+          ctx.fillStyle = colors[note.type - 1];
+          let xPosition = note.positionX;
+          let yPosition = note.floorPosition - floorPosition;
+          let noteSize = 1.0;
+          let fadeTime = 0.16;
+          let xScale = (0.9 / 16) * canvas.width;
+          let yScale = 0.6 * canvas.height * note.direction;
+          if (note.type != 3) {
+            // non-hold
+            if (time > note.time + fadeTime * tps) continue;
+            yPosition *= note.speed;
+            ctx.globalAlpha = Math.min(
+              1 - (time - note.time) / (fadeTime * tps),
+              1
+            );
             ctx.beginPath();
             ctx.moveTo((-noteSize + xPosition) * xScale, -yPosition * yScale);
             ctx.lineTo((noteSize + xPosition) * xScale, -yPosition * yScale);
             ctx.stroke();
-          } else yPosition = 0;
-          if (time > note.time + fadeTime * tps) ctx.globalAlpha = 0.3;
-          else ctx.globalAlpha = 0.6;
-          ctx.beginPath();
-          ctx.fillRect(
-            (-noteSize + xPosition) * xScale,
-            -(dyPosition + yPosition) * yScale,
-            noteSize * 2 * xScale,
-            dyPosition * yScale
-          );
+          } else if (note.type == 3) {
+            // hold
+            if (time > note.time + note.holdTime) continue;
+            let dTime = Math.min(
+              note.time + note.holdTime - time,
+              note.holdTime
+            );
+            let dyPosition = (note.speed / tps) * dTime;
+            if (time < note.time) {
+              ctx.globalAlpha = 1;
+              ctx.beginPath();
+              ctx.moveTo((-noteSize + xPosition) * xScale, -yPosition * yScale);
+              ctx.lineTo((noteSize + xPosition) * xScale, -yPosition * yScale);
+              ctx.stroke();
+            } else yPosition = 0;
+            if (time > note.time + fadeTime * tps) ctx.globalAlpha = 0.3;
+            else ctx.globalAlpha = 0.6;
+            ctx.beginPath();
+            ctx.fillRect(
+              (-noteSize + xPosition) * xScale,
+              -(dyPosition + yPosition) * yScale,
+              noteSize * 2 * xScale,
+              dyPosition * yScale
+            );
+          }
         }
       }
     }
