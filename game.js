@@ -1,18 +1,14 @@
-let canvas;
-let ctx;
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
 let startTime;
 let chart, music;
 let lineLength = 0;
 
-window.addEventListener("load", init);
 window.addEventListener("resize", () => {
-  if (!canvas || !ctx) return;
   resizeCanvas();
 });
 
 async function init() {
-  canvas = document.getElementById("canvas");
-  ctx = canvas.getContext("2d");
   resizeCanvas();
   audio = new Audio("music.wav");
   bgImage = new Image();
@@ -210,3 +206,5 @@ function loop() {
     requestAnimationFrame(loop);
   }
 }
+
+init();

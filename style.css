@@ -1,3 +1,8 @@
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 html,
 body {
   display: flex;
@@ -6,12 +11,11 @@ body {
   height: 100%;
   overflow: hidden;
   background: #000;
-  touch-action: none;
   font-family: system-ui;
   color: #fff;
   justify-content: center;
 }
-#canvas {
+canvas {
   display: block;
   width: 100vw;
   max-width: calc(100vh * 16 / 9);
