@@ -14,42 +14,6 @@ let yScale = 0.6 * canvas.height;
 let currentTime = 0;
 let judge = [0.08, 0.16, 0.18];
 
-let hitEffects = []; // debug
-
-// debug function, written by AI
-function drawHitEffects() {
-  if (!hitEffects.length) return;
-
-  const life = 0.25;
-  const baseRadius = 50;
-
-  const now = currentTime;
-  hitEffects = hitEffects.filter((e) => {
-    const age = now - e.t0;
-    if (age < 0 || age > life) return false;
-
-    const t = age / life;
-    const alpha = 1 - t;
-    const radius = baseRadius * (1 + 0.2 * t);
-
-    let color = "#888888";
-    if (e.judge === PERFECT) color = "#ffd900";
-    else if (e.judge === GOOD) color = "#00aaff";
-    else if (e.judge === BAD) color = "#ff0000";
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.beginPath();
-    ctx.arc(e.x, e.y, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 8;
-    ctx.stroke();
-    ctx.restore();
-
-    return true;
-  });
-}
-
 window.addEventListener("resize", () => {
   resizeCanvas();
 });
@@ -61,7 +25,6 @@ function onPointerDown(ev) {
   let rect = canvas.getBoundingClientRect();
   let x = ev.clientX - rect.left;
   let y = ev.clientY - rect.top;
-  hitEffects.push({ x, y, judge: MISS, t0: currentTime }); // debug
   let hit = null;
   for (let l = 0; l < chart.judgeLineList.length; l++) {
     let line = chart.judgeLineList[l];
@@ -87,8 +50,6 @@ function onPointerDown(ev) {
     if (Math.abs(hit.dt) <= judge[PERFECT]) note.judge = PERFECT;
     else if (Math.abs(hit.dt) <= judge[GOOD]) note.judge = GOOD;
     else if (Math.abs(hit.dt) <= judge[BAD]) note.judge = BAD;
-
-    hitEffects.push({ x, y, judge: note.judge, t0: currentTime }); // debug
   }
 }
 
@@ -299,7 +260,6 @@ function loop() {
   currentTime = audio.currentTime;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawLines();
-  drawHitEffects(); // debug
   if (!audio.ended) {
     requestAnimationFrame(loop);
   }
