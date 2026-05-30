@@ -8,7 +8,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let startTime;
 let chart, audio;
-let lineLength = 3 * canvas.width;
+let lineLength = 1920 * 3 * canvas.height / 1000;
 let xScale = (0.9 / 16) * canvas.width;
 let yScale = 0.6 * canvas.height;
 let currentTime = 0;
@@ -74,13 +74,13 @@ async function init() {
 function resizeCanvas() {
   canvas.width = canvas.getBoundingClientRect().width;
   canvas.height = canvas.getBoundingClientRect().height;
-  lineLength = 3 * canvas.width;
+  lineLength = 1920 * 3 * canvas.height / 1000;
   xScale = (0.9 / 16) * canvas.width;
   yScale = 0.6 * canvas.height;
 }
 
 async function loadChart() {
-  const res = await fetch("chart.json");
+  const res = await fetch("chart.json", { cache: "no-store" });
   chart = await res.json();
   for (let l = 0; l < chart.judgeLineList.length; l++) {
     let line = chart.judgeLineList[l];
@@ -123,7 +123,7 @@ async function loadChart() {
 function drawLines() {
   if (!chart || !audio) return;
   ctx.strokeStyle = "#FFFFBB";
-  ctx.lineWidth = (1 / 160) * canvas.height;
+  ctx.lineWidth = 3 * 2.5 * canvas.height / 1000;
   for (let l = 0; l < chart.judgeLineList.length; l++) {
     let line = chart.judgeLineList[l];
     let tps = (32 * line.bpm) / 60; // time (microbeats) per second
@@ -182,8 +182,8 @@ function drawLines() {
     ctx.translate(cx, cy);
     ctx.rotate(angle);
     ctx.beginPath();
-    ctx.moveTo(-lineLength, 0);
-    ctx.lineTo(lineLength, 0);
+    ctx.moveTo(-lineLength/2, 0);
+    ctx.lineTo(lineLength/2, 0);
     ctx.stroke();
 
     ctx.lineWidth = (1 / 80) * canvas.height; // thick notes
