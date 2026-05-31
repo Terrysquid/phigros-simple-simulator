@@ -12,7 +12,7 @@ let lineLength = 1920 * 3 * canvas.height / 1000;
 let xScale = (0.9 / 16) * canvas.width;
 let yScale = 0.6 * canvas.height;
 let currentTime = 0;
-let judge = [0.08, 0.16, 0.18];
+let judge = [0.08, 0.18, 0.22];
 
 window.addEventListener("resize", () => {
   resizeCanvas();
